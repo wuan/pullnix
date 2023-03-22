@@ -8,7 +8,6 @@ from .config import Repo
 def clone(repo: Repo, repo_path: Path):
     if repo_path.exists():
         return
-    name = repo_path.name
     subprocess.run(["git", "clone", repo.url], cwd=repo_path.parent, check=True)
 
 
