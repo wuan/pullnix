@@ -9,11 +9,13 @@ from dacite import from_dict
 class Repo:
     name: str
     url: str
+    branch: str = "main"
 
 
 @dataclass(frozen=True)
 class Config:
     repos: List[Repo] = field(default_factory=list)
+    mode: str = "nix"
     root: str = "/var/lib/pullnix"
 
 

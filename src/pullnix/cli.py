@@ -15,6 +15,8 @@ def cli(config_path="/etc/pullnix.yml"):
     for repo in config.repos:
         repo_path = root / repo.name
         if not repo_path.exists():
-            repository.clone(repo.url, repo_path)
+            repository.clone(repo, repo_path)
+        else:
+            repository.update(repo, repo_path)
 
 
