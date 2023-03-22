@@ -19,7 +19,7 @@ classifiers = [
 "Homepage" = "https://github.com/wuan/pullnix"
 "Bug Tracker" = "https://github.com/wuan/pullnix/issues"
 [project.optional-dependencies]
-tests = [
+test = [
     'pytest-cov',
     'mock',
     'assertpy',
@@ -27,3 +27,7 @@ tests = [
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
+[tool.pytest.ini_options]
+pythonpath = [
+  "src"
+]
