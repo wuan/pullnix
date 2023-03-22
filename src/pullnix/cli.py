@@ -14,9 +14,16 @@ def cli(config_path="/etc/pullnix.yml"):
 
     for repo in config.repos:
         repo_path = root / repo.name
+        update = False
+        changed_files = []
         if not repo_path.exists():
             repository.clone(repo, repo_path)
+            update = True
         else:
-            repository.update(repo, repo_path)
+            changed_files = repository.update(repo, repo_path)
+            if changed_files:
+                update = True
+
+        print(f"update: {update}, changed files: {', '.join(changed_files)}")
 
 
