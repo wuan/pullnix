@@ -1,13 +1,23 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import List
+
+import yaml
+from dacite import from_dict
 
 
-@dataclass
+@dataclass(frozen=True)
+class Repo:
+    name: str
+    url: str
+
+
+@dataclass(frozen=True)
 class Config:
-    repos: dict
+    repos: List[Repo] = field(default_factory=list)
+    root: str = "/var/lib/pullnix"
 
 
 def load_config(config_path="/etc/pullnix.yml") -> Config:
-    import yaml
     with open(config_path) as f:
         # use safe_load instead load
-        return Config(**(yaml.safe_load(f)))
+        return from_dict(data_class=Config, data=yaml.safe_load(f))

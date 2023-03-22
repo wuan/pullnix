@@ -8,13 +8,16 @@ description = "A pull based NixOS deployment tool"
 readme = "README.md"
 requires-python = ">=3.7"
 dependencies = [
-    'PyYAML',
+    "PyYAML",
+    "dacite",
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
+[project.scripts]
+pullnix = "pullnix.cli:cli"
 [project.urls]
 "Homepage" = "https://github.com/wuan/pullnix"
 "Bug Tracker" = "https://github.com/wuan/pullnix/issues"

@@ -4,5 +4,7 @@
 #
 #    pip-compile --output-file=requirements.txt pyproject.toml
 #
+dacite==1.8.0
+    # via pullnix (pyproject.toml)
 pyyaml==6.0
     # via pullnix (pyproject.toml)

@@ -1,4 +1,7 @@
+from assertpy import assert_that
+
 import pullnix
+from pullnix.config import Repo
 
 
 def test_load(tmp_path):
@@ -6,7 +9,11 @@ def test_load(tmp_path):
     with open(config_path, "w") as file:
         file.write("""
         repos:
-          base: git@github.com:foo/bar.git
+          - name: foo
+            url: git@github.com:bar/baz.git
         """)
     result = pullnix.config.load_config(config_path)
-    print(result)
+
+    assert_that(result).is_not_none()
+    assert_that(result.root).is_equal_to("/var/lib/pullnix")
+    assert_that(result.repos).contains_only(Repo("foo", "git@github.com:bar/baz.git"))
