@@ -9,6 +9,7 @@ def clone(repo: Repo, repo_path: Path):
     if repo_path.exists():
         return
     subprocess.run(["git", "clone", repo.url], cwd=repo_path.parent, check=True)
+    subprocess.run(["git", "checkout", repo.branch], cwd=repo_path, check=True)
 
 
 def update(repo: Repo, repo_path: Path) -> List[str]:
@@ -16,6 +17,7 @@ def update(repo: Repo, repo_path: Path) -> List[str]:
     diff_result = subprocess.run(["git", "diff", f"{repo.branch}...origin/{repo.branch}", "--name-only"], cwd=repo_path,
                                  check=True, capture_output=True)
     files = split(diff_result.stdout.decode())
+    subprocess.run(["git", "checkout", repo.branch], cwd=repo_path, check=True)
     if files:
         subprocess.run(["git", "pull"], cwd=repo_path, check=True)
     return files

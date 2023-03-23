@@ -27,38 +27,43 @@ def test_clone_with_existing_target(tmp_path, run):
 def test_clone_without_existing_target(tmp_path, run):
     target_path = tmp_path / "foo"
 
-    clone(Repo("bar", "baz"), target_path)
+    clone(Repo("bar", "baz", "quux"), target_path)
 
-    run.assert_called_once_with(["git", "clone", "baz"], cwd=tmp_path, check=True)
+    assert_that(run.call_args_list).contains_only(
+        call(["git", "clone", "baz"], cwd=tmp_path, check=True),
+        call(["git", "checkout", "quux"], cwd=target_path, check=True),
+    )
 
 
 def test_update(tmp_path, run):
     target_path = tmp_path / "foo"
 
-    run.side_effect = [None, CompletedProcess([], 0, "".encode(), "".encode())]
+    run.side_effect = [None, CompletedProcess([], 0, "".encode(), "".encode()), None]
 
     result = update(Repo("bar", "baz", "quux"), target_path)
 
     assert_that(result).is_empty()
-    assert_that(run.call_args_list).contains_only(
+    assert run.call_args_list == [
         call(["git", "fetch"], cwd=target_path, check=True),
-        call(["git", "diff", "quux...origin/quux", "--name-only"], cwd=target_path, check=True, capture_output=True)
-    )
+        call(["git", "diff", "quux...origin/quux", "--name-only"], cwd=target_path, check=True, capture_output=True),
+        call(["git", "checkout", "quux"], cwd=target_path, check=True),
+    ]
 
 
 def test_update_with_changes(tmp_path, run):
     target_path = tmp_path / "foo"
 
-    run.side_effect = [None, CompletedProcess([], 0, "one\ntwo".encode(), "".encode()), None]
+    run.side_effect = [None, CompletedProcess([], 0, "one\ntwo".encode(), "".encode()), None, None]
 
     result = update(Repo("bar", "baz", "quux"), target_path)
 
     assert_that(result).contains_only("one", "two")
-    assert_that(run.call_args_list).contains_only(
+    assert run.call_args_list == [
         call(["git", "fetch"], cwd=target_path, check=True),
         call(["git", "diff", "quux...origin/quux", "--name-only"], cwd=target_path, check=True, capture_output=True),
+        call(["git", "checkout", "quux"], cwd=target_path, check=True),
         call(["git", "pull"], cwd=target_path, check=True),
-    )
+    ]
 
 
 def test_lines():

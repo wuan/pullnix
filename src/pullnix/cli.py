@@ -1,7 +1,27 @@
 from pathlib import Path
 
-from .config import load_config
 from . import repository
+from .config import load_config
+
+
+def ensure_root_dir(root):
+    if not root.exists():
+        root.mkdir()
+
+
+def ensure_updated_repo(repo, root):
+    updated = False
+    changed_files = []
+
+    repo_path = root / repo.name
+    if not repo_path.exists():
+        repository.clone(repo, repo_path)
+        updated = True
+    else:
+        changed_files = repository.update(repo, repo_path)
+        if changed_files:
+            updated = True
+    return changed_files, updated
 
 
 def cli(config_path="/etc/pullnix.yml"):
@@ -9,21 +29,8 @@ def cli(config_path="/etc/pullnix.yml"):
 
     root = Path(config.root)
 
-    if not root.exists():
-        root.mkdir()
+    ensure_root_dir(root)
 
     for repo in config.repos:
-        repo_path = root / repo.name
-        update = False
-        changed_files = []
-        if not repo_path.exists():
-            repository.clone(repo, repo_path)
-            update = True
-        else:
-            changed_files = repository.update(repo, repo_path)
-            if changed_files:
-                update = True
-
-        print(f"update: {update}, changed files: {', '.join(changed_files)}")
-
-
+        changed_files, updated = ensure_updated_repo(repo, root)
+        print(f"updated: {updated}, changed files: {', '.join(changed_files)}")
